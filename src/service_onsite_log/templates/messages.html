@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Messages Log</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .filters { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin-bottom: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 0.35rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; vertical-align: top; }
+        th { background: #f5f5f5; }
+        .error { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 0.6rem 0.8rem; margin-bottom: 1rem; }
+        .msg-text { white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <nav><a href="/">Back to Home &rarr;</a></nav>
+    <h1>Messages</h1>
+
+    {% if error_message %}
+    <div class="error">{{ error_message }}</div>
+    {% endif %}
+
+    <form method="get" action="/messages" class="filters">
+        <div class="field">
+            <label for="sender">Name</label>
+            <select id="sender" name="sender">
+                <option value="">All Names</option>
+                {% for name in sender_options %}
+                <option value="{{ name }}" {% if selected_sender == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="start_date">Start Date</label>
+            <input id="start_date" type="date" name="start_date" value="{{ start_date or '' }}">
+        </div>
+
+        <div class="field">
+            <label for="end_date">End Date (min +1 day)</label>
+            <input id="end_date" type="date" name="end_date" value="{{ end_date or '' }}">
+        </div>
+
+        <div class="field">
+            <button type="submit">Apply Filter</button>
+        </div>
+
+        <div class="field">
+            <a href="/messages">Reset</a>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.name }}</td>
+                <td>{{ row.date }}</td>
+                <td>{{ row.time }}</td>
+                <td class="msg-text">{{ row.message }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No messages match the current filter.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

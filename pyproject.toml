@@ -1,0 +1,22 @@
+[project]
+name = "service-onsite-log"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.165.0",
+    "python-multipart>=0.0.34",
+]
+
+[project.scripts]
+service-onsite-log = "service_onsite_log:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.fastapi]
+entrypoint = "service_onsite_log.main:app"
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WhatsApp Chat Parser & Sender Mapper</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        nav { margin-bottom: 1rem; }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        input[type="text"] { width: 100%; padding: 6px; box-sizing: border-box; }
+        button { padding: 8px 14px; cursor: pointer; margin-top: 8px; }
+        pre { background: #f4f4f4; padding: 12px; overflow-x: auto; max-height: 400px; }
+        .banner { background: #e6f4ea; border: 1px solid #137333; padding: 10px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>WhatsApp Chat Parser & Sender Mapper</h1>
+    <nav><a href="/messages">View All Messages &rarr;</a></nav>
+    <nav><a href="/statistics">View Statistics &rarr;</a></nav>
+
+    {% if status_banner %}
+    <div class="banner">{{ status_banner | safe }}</div>
+    {% endif %}
+
+    <h2>1. Upload Chat File</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload & Parse</button>
+    </form>
+
+    <h2>2. Sender Name Matching</h2>
+    <form action="/mappings" method="post">
+        <table>
+            <thead>
+                <tr><th>Raw Sender (from export)</th><th>Matched Name (display/output)</th></tr>
+            </thead>
+            <tbody>
+                {% for m in mappings %}
+                <tr>
+                    <td><code>{{ m.raw_sender }}</code><input type="hidden" name="raw_senders" value="{{ m.raw_sender }}"></td>
+                    <td><input type="text" name="matched_names" value="{{ m.matched_name }}" required></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2">No senders yet. Upload a chat file.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Save Name Mappings</button>
+    </form>
+</body>
+</html>

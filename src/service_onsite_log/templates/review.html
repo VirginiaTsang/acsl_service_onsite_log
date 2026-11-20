@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Review Messages by Day</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        nav { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .nav-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; vertical-align: top; }
+        th { background: #f5f5f5; }
+        button { padding: 6px 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Day-by-Day Message Selection</h1>
+    <nav>
+        <a href="/">&larr; Back to Upload & Sender Mapping</a>
+        <a href="/messages">View Selected Messages Table &rarr;</a>
+    </nav>
+
+    <p><strong>Total days to review:</strong> {{ total_days }}</p>
+
+    {% if current_day %}
+        <form action="/review" method="post">
+            <input type="hidden" name="current_day_index" value="{{ day_index }}">
+
+            <div class="nav-bar">
+                <button
+                    type="submit"
+                    name="target_day_index"
+                    value="{{ day_index - 1 }}"
+                    {% if day_index <= 0 %}disabled{% endif %}
+                >&larr; Previous Day</button>
+
+                <strong>
+                    Day {{ day_index + 1 }} of {{ total_days }} ({{ current_day.display_date }})
+                </strong>
+
+                <button
+                    type="submit"
+                    name="target_day_index"
+                    value="{{ day_index + 1 }}"
+                    {% if day_index + 1 >= total_days %}disabled{% endif %}
+                >Next Day &rarr;</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Selected</th>
+                        <th style="width: 110px;">Time</th>
+                        <th style="width: 180px;">Name</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in current_day.messages %}
+                    <tr>
+                        <td>
+                            <input type="hidden" name="day_msg_ids" value="{{ m.id }}">
+                            <input
+                                type="checkbox"
+                                name="selected_ids"
+                                value="{{ m.id }}"
+                                {% if m.is_selected %}checked{% endif %}
+                            >
+                        </td>
+                        <td>{{ m.time }}</td>
+                        <td>{{ m.sender }}</td>
+                        <td style="white-space: pre-wrap;">{{ m.message }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    {% else %}
+        <p>No messages available to review.</p>
+    {% endif %}
+</body>
+</html>
