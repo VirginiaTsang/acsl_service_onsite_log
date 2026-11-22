@@ -1,0 +1,491 @@
+:root{
+	font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+	color:#172033;
+	background:#f2f8f5;
+	font-synthesis:none
+}
+*{
+	box-sizing:border-box
+}
+body{
+	margin:0;
+	padding:32px 20px
+}
+h1{
+	font-size:clamp(1.8rem,4vw,2.5rem);
+	letter-spacing:-.04em;
+	margin:.15rem 0 .5rem
+}
+h2{
+	font-size:1.05rem;
+	margin:0 0 .45rem
+}
+p{
+	line-height:1.5
+}
+.container{
+	max-width:1120px;
+	margin:0 auto
+}
+.page-head{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:1rem;
+	margin:0 0 1.4rem
+}
+.eyebrow{
+	font-size:.72rem;
+	font-weight:750;
+	letter-spacing:.12em;
+	color:#527567;
+	margin:0
+}
+.muted,small,.footnote{
+	color:#667a70
+}
+.muted{
+	margin:.25rem 0
+}
+.steps{
+	display:flex;
+	gap:.4rem;
+	flex-wrap:wrap;
+	margin:0 0 1.2rem
+}
+.steps a,.button{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	border:1px solid #d5e6dc;
+	border-radius:9px;
+	padding:.65rem .9rem;
+	text-decoration:none;
+	color:#244837;
+	background:#fff;
+	font:inherit;
+	font-size:.9rem
+}
+.steps a.active,.button.primary{
+	background:#008657;
+	color:white;
+	border-color:#008657;
+    padding:.65rem .9rem;
+}
+.button{
+	cursor:pointer;
+    padding:.65rem .9rem;
+}
+.panel{
+	background:white;
+	border:1px solid #dde9e1;
+	border-radius:14px;
+	padding:1.15rem;
+	margin:0 0 1rem;
+	box-shadow:0 5px 18px #16452d0a
+}
+.filters{
+	display:flex;
+	align-items:end;
+	gap:1rem;
+	flex-wrap:wrap;
+	margin-top:.8rem
+}
+.filters label,form label{
+	display:flex;
+	flex-direction:column;
+	gap:.4rem;
+	font-weight:600;
+	font-size:.9rem
+}
+.filters select{
+	min-width:220px
+}
+input,select{
+	font:inherit;
+	border:1px solid #cadbd0;
+	border-radius:7px;
+	padding:.55rem;
+	background:white
+}
+small{
+	font-weight:400;
+	max-width:250px
+}
+.metrics{
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	gap:1rem
+}
+.chart{
+	margin-top:1rem;
+	display:flex;
+	flex-direction:column;
+	gap:.85rem;
+	min-height:80px
+}
+.bar-row{
+	display:grid;
+	grid-template-columns:minmax(90px,150px) minmax(70px,1fr) 110px;
+	gap:.7rem;
+	align-items:center;
+	font-size:.84rem
+}
+.bar-label{
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap
+}
+.bar-track{
+	height:12px;
+	background:#eaf3ed;
+	border-radius:8px;
+	overflow:hidden
+}
+.bar-fill{
+	height:100%;
+	background:linear-gradient(90deg,#008c5c,#53c996);
+	border-radius:8px;
+	min-width:3px
+}
+.footnote{
+	font-size:.85rem
+}
+.empty{
+	color:#667a70;
+	padding:1rem 0
+}
+table{
+	border-collapse:collapse;
+	width:100%;
+	margin:1rem 0
+}
+th,td{
+	border-bottom:1px solid #dce8df;
+	padding:.7rem .6rem;
+	text-align:left;
+	vertical-align:top
+}
+th{
+	color:#526b5d;
+	font-size:.82rem
+}
+td input[type=text]{
+	width:100%
+}
+nav{
+	display:flex;
+	gap:1rem;
+	flex-wrap:wrap;
+	margin:0 0 1rem
+}
+button{
+	cursor:pointer
+}
+code{
+	overflow-wrap:anywhere
+}
+@media(max-width:720px){
+	body{
+		padding:20px 14px
+}
+	.page-head{
+		align-items:flex-start;
+		flex-direction:column
+}
+	.metrics{
+		grid-template-columns:1fr
+}
+	.bar-row{
+		grid-template-columns:100px 1fr 88px
+}
+	.filters>*{
+		width:100%
+}
+	.filters select{
+		width:100%
+}
+}
+.chart-panel{
+	display:flex;
+	flex-direction:column;
+	min-width:0
+}
+.chart-heading{
+	min-height:64px
+}
+.chart-filters{
+	display:flex;
+	align-items:end;
+	gap:.75rem;
+	flex-wrap:wrap;
+	padding:.8rem;
+	background:#f3f8f5;
+	border:1px solid #dce9e0;
+	border-radius:10px
+}
+.chart-filters label{
+	display:flex;
+	flex-direction:column;
+	gap:.35rem;
+	font-size:.82rem;
+	font-weight:650
+}
+.chart-filters select[multiple]{
+	min-width:185px
+}
+.chart-filters small{
+	font-size:.72rem
+}
+.review-form{
+	margin-top:1rem
+}
+.review-toolbar{
+	position:sticky;
+	top:0;
+	z-index:2;
+	display:flex;
+	align-items:center;
+	gap:.55rem;
+	flex-wrap:wrap;
+	background:#fff;
+	padding:.8rem;
+	border:0.5px solid #dce9e0;
+	border-radius:12px;
+	box-shadow:0 5px 18px #16452d0c;
+	margin-bottom:.8rem
+}
+.review-toolbar.bottom{
+	position:static;
+	justify-content:center;
+	margin-top:.8rem
+}
+.day-label{
+	font-weight:750;
+	margin:0 auto
+}
+.review-list{
+	display:flex;
+	flex-direction:column;
+	gap:.6rem
+}
+.review-row{
+	display:grid;
+	grid-template-columns:60px 150px minmax(200px,1fr);
+	align-items:center;
+	gap:.9rem;
+	background:white;
+	border:1px solid #dce9e0;
+	border-left:4px solid #cadbd0;
+	border-radius:11px;
+	padding:.8rem 1rem
+}
+.review-row.is-selected{
+	border-left-color:#009f68;
+	background:#f7fcf9
+}
+.select-cell{
+	display:flex;
+	align-items:center;
+	gap:.4rem;
+	font-size:.8rem;
+	color:#536c5e
+}
+.select-cell input{
+	width:18px;
+	height:18px;
+	accent-color:#008956
+}
+.message-meta{
+	display:flex;
+	flex-direction:column;
+	gap:.25rem
+}
+.message-meta strong{
+	font-size:.9rem
+}
+.message-meta time{
+	font-size:.8rem;
+	color:#667a70
+}
+.message-edit textarea{
+	width:100%;
+	min-height:48px;
+	resize:vertical;
+	font:inherit;
+	font-size:.9rem;
+	line-height:1.4;
+	border:1px solid #d3e3d8;
+	border-radius:8px;
+	padding:.6rem .7rem;
+	background:white
+}
+.message-edit textarea:focus{
+	outline:2px solid #8ed5b5;
+	border-color:#009f68
+}
+.sr-only{
+	position:absolute;
+	width:1px;
+	height:1px;
+	padding:0;
+	margin:-1px;
+	overflow:hidden;
+	clip:rect(0,0,0,0);
+	white-space:nowrap;
+	border:0
+}
+.empty-state{
+	text-align:center;
+	padding:3rem 1rem
+}
+.table-wrap{
+	overflow-x:auto
+}
+.error{
+	color:#b91c1c;
+	background:#fef2f2;
+	border:1px solid #fecaca;
+	padding:.6rem .8rem;
+	margin-bottom:1rem;
+	border-radius:8px
+}
+.msg-text{
+	white-space:pre-wrap;
+	min-width:260px
+}
+@media(max-width:680px){
+	.review-row{
+		grid-template-columns:52px 1fr;
+		gap:.55rem
+}
+	.message-edit{
+		grid-column:1/-1
+}
+	.review-toolbar .day-label{
+		order:-1;
+		width:100%;
+		margin:0
+}
+	.chart-filters>*{
+		width:100%
+}
+	.chart-filters select[multiple]{
+		width:100%
+}
+}
+/* Compact message table with emphasis limited to the review controls. */
+.review-toolbar{
+	position:static;
+	z-index:auto;
+	box-shadow:none;
+	margin:.8rem 0;
+	padding:.6rem .7rem;
+	border-radius:8px;
+	background:#f3f8f5;
+	border-color:#e1e7ef
+}
+.review-toolbar .day-label{
+	margin:0 auto
+}
+.review-table{
+	background:#fff
+}
+.review-table th,.review-table td{
+	border:1px solid #d7e4da;
+	padding:.5rem .6rem
+}
+.review-table th{
+	background:#edf5ef
+}
+.review-table textarea{
+	display:block;
+	width:100%;
+	min-height:42px;
+	resize:vertical;
+	border:1px solid #d0dfd5;
+	border-radius:4px;
+	padding:.45rem;
+	font:inherit;
+	font-size:.9rem;
+	background:#fff
+}
+.review-table textarea:focus{
+	outline:2px solid #8ed5b5
+}
+.line-chart-wrap{
+	position:relative;
+	overflow-x:auto;
+	overflow-y:hidden;
+	margin-top:1rem
+}
+.line-chart{
+	min-height:350px
+}
+.line-chart svg{
+	display:block;
+	max-width:none
+}
+.grid-line{
+	stroke:#e0ebe3;
+	stroke-width:1
+}
+.axis-line{
+	stroke:#668574;
+	stroke-width:1
+}
+.axis-label,.location-label{
+	fill:#5c7566;
+	font-size:12px
+}
+.axis-title{
+	fill:#3c604b;
+	font-size:13px;
+	font-weight:650
+}
+.line-series{
+	fill:none;
+	stroke:#009f68;
+	stroke-width:3;
+	stroke-linejoin:round;
+	stroke-linecap:round
+}
+.line-point{
+	fill:#fff;
+	stroke:#009f68;
+	stroke-width:3;
+	cursor:pointer
+}
+.line-point:hover,.line-point:focus{
+	fill:#009f68;
+	stroke:#006a47;
+	stroke-width:4;
+	outline:none
+}
+.line-tooltip{
+	display:none;
+	position:absolute;
+	z-index:5;
+	pointer-events:none;
+	background:#172033;
+	color:white;
+	padding:.45rem .65rem;
+	border-radius:5px;
+	font-size:.8rem;
+	box-shadow:0 3px 10px #0003;
+	white-space:nowrap
+}
+/* Dashboard chart cards share the page width, and the line plot scales to its card. */
+.metrics{grid-template-columns:minmax(0,1fr)}.line-chart-wrap{overflow-x:hidden}.line-chart,.line-chart svg{width:100%}.line-chart svg{height:auto}
+/* Give the upload action a clearer click target. */
+form[action="/upload"] button{padding:.85rem 1.35rem;margin-top:.75rem}
+/* Keep the table close to the review controls. */
+.review-toolbar{margin-bottom:.2rem}.review-toolbar+.muted{margin:.1rem 0}.review-table{margin:.2rem 0 1rem}
+
+:root{--brand:#009f68;--brand-dark:#007a50;--brand-soft:#e7f5ed}a{color:var(--brand-dark)}.steps a.active,.button.primary{background:var(--brand);border-color:var(--brand)}.button.primary:hover{background:var(--brand-dark);border-color:var(--brand-dark)}.steps a:hover,.button:not(.primary):hover{border-color:#72c39e;color:#006a47}.date-jump{display:flex;align-items:center;gap:.45rem;font-size:.84rem;font-weight:650;color:#3c604b}.date-jump select{background:#fff;border-color:#b9ddc8;color:#244837}.day-count{font-size:.82rem;color:#667a70;white-space:nowrap}
+/* Review date is a prominent label with a compact calendar affordance. */
+.date-control{display:flex;align-items:center;gap:.55rem;margin:0 auto}.review-date{font-size:1.25rem;letter-spacing:-.02em;color:#244837}.calendar-button{display:grid;place-items:center;width:30px;height:30px;padding:4px;border:1px solid #b9ddc8;border-radius:6px;background:#fff;color:#008657;cursor:pointer}.calendar-button:hover{background:#e7f5ed;border-color:#009f68}.calendar-button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.calendar-input{position:fixed;left:-10000px;top:0;width:1px;height:1px;opacity:0}
+@media(max-width:900px){.line-chart-wrap{overflow-x:auto}.line-chart{max-width:none}}
+.date-control{position:relative}.calendar-input{left:0;top:100%}
+.calendar-button{position:relative;overflow:hidden;cursor:pointer}.calendar-input{position:absolute;inset:0;width:100%;height:100%;left:auto;top:auto;opacity:.01;cursor:pointer;z-index:2}
+.review-table input[type="checkbox"]{width:22px;height:22px;padding:0;margin:2px;accent-color:#009f68;cursor:pointer;vertical-align:middle}

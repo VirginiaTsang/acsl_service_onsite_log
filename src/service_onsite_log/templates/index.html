@@ -1,53 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>WhatsApp Chat Parser & Sender Mapper</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-        nav { margin-bottom: 1rem; }
-        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        input[type="text"] { width: 100%; padding: 6px; box-sizing: border-box; }
-        button { padding: 8px 14px; cursor: pointer; margin-top: 8px; }
-        pre { background: #f4f4f4; padding: 12px; overflow-x: auto; max-height: 400px; }
-        .banner { background: #e6f4ea; border: 1px solid #137333; padding: 10px; margin-bottom: 1rem; }
-    </style>
-</head>
-<body>
-    <h1>WhatsApp Chat Parser & Sender Mapper</h1>
-    <nav><a href="/messages">View All Messages &rarr;</a></nav>
-    <nav><a href="/statistics">View Statistics &rarr;</a></nav>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>On-site activity</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><main class="container">
+<header class="page-head"><div><p class="eyebrow">SERVICE OPERATIONS</p><h1>On-site activity</h1>
+    <!-- <p class="muted">Site visits and accumulated time from reviewed WhatsApp messages.</p> -->
+</div><a class="button primary" href="/upload">Import WhatsApp log</a></header>
+<nav class="steps"><a class="active" href="/">Dashboard</a><a href="/upload">1 · Upload</a><a href="/mappings">2 · Match names</a><a href="/review">3 · Review messages</a></nav>
+<section class="metrics">
+<article class="panel chart-panel"><div class="chart-heading"><div><h2>Time by site</h2><p class="muted">Site time for the selected calendar month, accumulated across available years</p></div></div>
+<div class="chart-filters"><label>Person<select id="time-name">{% for name in dashboard.names %}<option value="{{ name }}">{{ name }}</option>{% else %}<option value="">No engineers yet</option>{% endfor %}</select></label><label>Month<select id="time-month">{% for month in dashboard.months %}<option value="{{ month.value }}" {% if month.value == dashboard.default_month %}selected{% endif %}>{{ month.label }}</option>{% endfor %}</select></label><label>Display<select id="time-mode"><option value="total">Total time</option><option value="average">Average time per visit</option></select></label><button class="button" id="time-apply">Apply</button></div><div class="line-chart-wrap"><div id="time-chart" class="line-chart"></div><div id="line-tooltip" class="line-tooltip"></div></div></article>
+<!-- </section><p class="footnote">Time is estimated from consecutive selected messages by one engineer on the same day. Correct message text and selection on the Review messages page to improve the totals.</p> -->
+<article class="panel chart-panel"><div class="chart-heading"><div><h2>Average site visits per day</h2><p class="muted">Selected location messages per active day</p></div></div>
+<div class="chart-filters"><label>Engineers<select id="visits-names" multiple size="3">{% for name in dashboard.names %}<option value="{{ name }}" selected>{{ name }}</option>{% endfor %}</select><small>Select several with ⌘/Ctrl; leave all selected for everyone.</small></label><label>From<input id="visits-start" type="date" value="{{ dashboard.min_date }}"></label><label>To<input id="visits-end" type="date" value="{{ dashboard.max_date }}"></label><button class="button" id="visits-apply">Apply</button></div><div id="visits-chart" class="chart"></div></article>
+</section>
 
-    {% if status_banner %}
-    <div class="banner">{{ status_banner | safe }}</div>
-    {% endif %}
-
-    <h2>1. Upload Chat File</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Upload & Parse</button>
-    </form>
-
-    <h2>2. Sender Name Matching</h2>
-    <form action="/mappings" method="post">
-        <table>
-            <thead>
-                <tr><th>Raw Sender (from export)</th><th>Matched Name (display/output)</th></tr>
-            </thead>
-            <tbody>
-                {% for m in mappings %}
-                <tr>
-                    <td><code>{{ m.raw_sender }}</code><input type="hidden" name="raw_senders" value="{{ m.raw_sender }}"></td>
-                    <td><input type="text" name="matched_names" value="{{ m.matched_name }}" required></td>
-                </tr>
-                {% else %}
-                <tr><td colspan="2">No senders yet. Upload a chat file.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit">Save Name Mappings</button>
-    </form>
-</body>
-</html>
+</main><script>
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function params(names,start,end){const p=new URLSearchParams();names.forEach(n=>p.append('names',n));if(start)p.set('start_date',start);if(end)p.set('end_date',end);return p;}
+function renderBars(target,rows,unit){if(!rows.length){target.innerHTML='<p class="empty">No selected messages in this range.</p>';return;}const max=Math.max(...rows.map(r=>Number(r.value)),1);target.innerHTML=rows.map(r=>`<div class="bar-row"><span class="bar-label" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(1,r.value/max*100)}%"></div></div><strong>${r.value} ${unit}</strong></div>`).join('');}
+function dateFromTimestamp(value){const [d,t='00:00:00']=value.split(' ');const [day,month,year]=d.split('/');return new Date(`${year}-${month}-${day}T${t}`);}
+async function getMessages(names,start,end){const d=await fetch('/statistics/data?'+params(names,start,end)).then(r=>r.json());return d.messages.map(m=>({...m,day:m.timestamp.split(' ')[0].split('/').reverse().join('-'),dt:dateFromTimestamp(m.timestamp)})).filter(m=>!isNaN(m.dt));}
+async function updateVisits(){const selected=[...document.getElementById('visits-names').selectedOptions].map(o=>o.value);const msgs=await getMessages(selected,document.getElementById('visits-start').value,document.getElementById('visits-end').value);const perDay=new Map();for(const m of msgs){const key=m.name+'|'+m.day;if(!perDay.has(key))perDay.set(key,0);perDay.set(key,perDay.get(key)+1);}const people=new Map();for(const [key,count] of perDay){const name=key.slice(0,key.lastIndexOf('|'));if(!people.has(name))people.set(name,{count:0,days:0});people.get(name).count+=count;people.get(name).days++;}renderBars(document.getElementById('visits-chart'),[...people].map(([name,v])=>({name,value:(v.count/v.days).toFixed(2)})),'visits/day');}
+function renderLineChart(target,tooltip,rows,mode){if(!rows.length){target.style.width='100%';target.innerHTML='<p class="empty">No selected messages for this person and month.</p>';return;}target.style.width='100%';const narrow=window.matchMedia('(max-width: 900px)').matches;const width=narrow?Math.max(850,rows.length*95+120):Math.max(680,target.clientWidth||680);target.style.width=`${width}px`;const height=390,left=72,right=140,top=24,bottom=138,plotW=width-left-right,plotH=height-top-bottom;const maxVal=Math.max(...rows.map(r=>r.value),1);const yMax=Math.ceil(maxVal/Math.max(maxVal/5,0.01))*Math.max(maxVal/5,0.01);const x=i=>left+(rows.length===1?plotW/2:i*plotW/(rows.length-1));const y=v=>top+plotH-(v/yMax)*plotH;let svg=`<svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="${mode} time by location line chart">`;for(let i=0;i<=5;i++){const val=yMax*i/5,yy=y(val);svg+=`<line x1="${left}" y1="${yy}" x2="${width-right}" y2="${yy}" class="grid-line"/><text x="${left-10}" y="${yy+4}" text-anchor="end" class="axis-label">${val.toFixed(1)}</text>`;}svg+=`<line x1="${left}" y1="${top}" x2="${left}" y2="${top+plotH}" class="axis-line"/><line x1="${left}" y1="${top+plotH}" x2="${width-right}" y2="${top+plotH}" class="axis-line"/><text x="18" y="${top+plotH/2}" transform="rotate(-90 18 ${top+plotH/2})" text-anchor="middle" class="axis-title">Time (hours)</text>`;const points=rows.map((r,i)=>`${x(i)},${y(r.value)}`).join(' ');svg+=`<polyline points="${points}" class="line-series"/>`;rows.forEach((r,i)=>{const label=escapeHtml(r.name);svg+=`<circle cx="${x(i)}" cy="${y(r.value)}" r="6" class="line-point" tabindex="0" data-site="${label}" data-value="${r.value.toFixed(2)}"/><text x="${x(i)}" y="${top+plotH+23}" transform="rotate(35 ${x(i)} ${top+plotH+23})" class="location-label">${label}</text>`;});svg+='</svg>';target.innerHTML=svg;target.querySelectorAll('.line-point').forEach(point=>{const show=e=>{tooltip.textContent=`${point.dataset.site}: ${point.dataset.value} hours`;tooltip.style.display='block';const rect=target.parentElement.getBoundingClientRect();tooltip.style.left=`${e.clientX-rect.left+12}px`;tooltip.style.top=`${e.clientY-rect.top-38}px`;};point.addEventListener('mousemove',show);point.addEventListener('mouseenter',show);point.addEventListener('mouseleave',()=>tooltip.style.display='none');point.addEventListener('focus',()=>{const r=point.getBoundingClientRect();const box=target.parentElement.getBoundingClientRect();tooltip.textContent=`${point.dataset.site}: ${point.dataset.value} hours`;tooltip.style.display='block';tooltip.style.left=`${r.left-box.left+r.width/2}px`;tooltip.style.top=`${r.top-box.top-32}px`;});point.addEventListener('blur',()=>tooltip.style.display='none');});}
+async function updateTime(){const name=document.getElementById('time-name').value,month=document.getElementById('time-month').value,mode=document.getElementById('time-mode').value;const all=await getMessages(name?[name]:[],'','');const msgs=all.filter(m=>m.day.split('-')[1]===month);const perDay=new Map();for(const m of msgs){const key=m.name+'|'+m.day;if(!perDay.has(key))perDay.set(key,[]);perDay.get(key).push(m);}const durations=new Map();for(const entries of perDay.values()){entries.sort((a,b)=>a.dt-b.dt);for(let i=0;i<entries.length-1;i++){const hours=(entries[i+1].dt-entries[i].dt)/3600000;if(hours>=0){const site=entries[i].message.trim()||'(blank site)';if(!durations.has(site))durations.set(site,[]);durations.get(site).push(hours);}}}const rows=[...durations].map(([name,values])=>({name,value:mode==='total'?values.reduce((a,b)=>a+b,0):values.reduce((a,b)=>a+b,0)/values.length})).sort((a,b)=>a.name.localeCompare(b.name));renderLineChart(document.getElementById('time-chart'),document.getElementById('line-tooltip'),rows,mode);}
+document.getElementById('visits-apply').addEventListener('click',updateVisits);document.getElementById('time-apply').addEventListener('click',updateTime);document.getElementById('time-name').addEventListener('change',updateTime);document.getElementById('time-month').addEventListener('change',updateTime);document.getElementById('time-mode').addEventListener('change',updateTime);updateVisits();updateTime();
+</script></body></html>

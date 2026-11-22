@@ -46,8 +46,8 @@ def validate_date_range(start_date: date | None, end_date: date | None) -> tuple
         return None, False
     if not start_date or not end_date:
         return "Please select both a Start Date and an End Date.", False
-    if (end_date - start_date).days < 1:
-        return "Date range must be at least 1 day (End Date must be after Start Date).", False
+    if end_date < start_date:
+        return "End Date must be the same as or later than Start Date.", False
     return None, True
 
 
@@ -63,7 +63,7 @@ def format_filtered_rows(
         if apply_dates:
             if dt is None or start_date is None or end_date is None:
                 continue
-            if not (start_date <= dt.date() < end_date):
+            if not (start_date <= dt.date() <= end_date):
                 continue
 
         if dt is not None:

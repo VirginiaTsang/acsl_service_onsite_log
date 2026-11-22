@@ -1,83 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Review Messages by Day</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-        nav { display: flex; gap: 1rem; margin-bottom: 1rem; }
-        .nav-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
-        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; vertical-align: top; }
-        th { background: #f5f5f5; }
-        button { padding: 6px 12px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <h1>Day-by-Day Message Selection</h1>
-    <nav>
-        <a href="/">&larr; Back to Upload & Sender Mapping</a>
-        <a href="/messages">View Selected Messages Table &rarr;</a>
-    </nav>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review messages</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><main class="container">
+<header class="page-head"><div><p class="eyebrow">STEP 3 OF 3</p><h1>Review messages</h1>
+    <!-- <p class="muted">Select useful location messages and correct message text as needed.</p> -->
+</div><a class="button" href="/review/selected">View selected messages</a></header>
+<nav class="steps"><a href="/">Dashboard</a><a href="/upload">1 · Upload</a><a href="/mappings">2 · Match names</a><a class="active" href="/review">3 · Review messages</a></nav>
+{% if current_day %}<form action="/review" method="post"><input type="hidden" name="current_day_index" value="{{ day_index }}"><input type="hidden" id="target-day-index" name="target_day_index" value="{{ day_index }}">
+<p class="muted">{{ total_days }} dates available. Changes save when you save this date or navigate.</p>
+<div class="review-toolbar"><button class="button" type="button" onclick="setAll(true)">Select all</button><button class="button" type="button" onclick="setAll(false)">Unselect all</button><div class="date-control"><strong class="review-date">{{ current_day.display_date }}</strong><label class="calendar-button" title="Choose review date"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9h16"/></svg><input id="date-chooser" class="calendar-input" type="date" aria-label="Choose review date" min="{{ first_review_date }}" max="{{ last_review_date }}" value="{{ current_day.iso_date if current_day.iso_date != 'undated' else '' }}" onchange="jumpCalendarDate(this.value)"></label><select id="available-days" hidden>{% for day in day_options %}<option value="{{ day.index }}" data-date="{{ day.iso_date }}" {% if day.index == day_index %}selected{% endif %}>{{ day.display_date }}</option>{% endfor %}</select><span class="day-count">{{ day_index + 1 }} of {{ total_days }}</span></div><button class="button" type="submit" onclick="setTarget({{ day_index - 1 }})" {% if day_index <= 0 %}disabled{% endif %}>← Previous date</button><button class="button" type="submit" onclick="setTarget({{ day_index + 1 }})" {% if day_index + 1 >= total_days %}disabled{% endif %}>Next date →</button><button class="button primary" type="submit" onclick="setTarget({{ day_index }})">Save date</button></div>
 
-    <p><strong>Total days to review:</strong> {{ total_days }}</p>
-
-    {% if current_day %}
-        <form action="/review" method="post">
-            <input type="hidden" name="current_day_index" value="{{ day_index }}">
-
-            <div class="nav-bar">
-                <button
-                    type="submit"
-                    name="target_day_index"
-                    value="{{ day_index - 1 }}"
-                    {% if day_index <= 0 %}disabled{% endif %}
-                >&larr; Previous Day</button>
-
-                <strong>
-                    Day {{ day_index + 1 }} of {{ total_days }} ({{ current_day.display_date }})
-                </strong>
-
-                <button
-                    type="submit"
-                    name="target_day_index"
-                    value="{{ day_index + 1 }}"
-                    {% if day_index + 1 >= total_days %}disabled{% endif %}
-                >Next Day &rarr;</button>
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 80px;">Selected</th>
-                        <th style="width: 110px;">Time</th>
-                        <th style="width: 180px;">Name</th>
-                        <th>Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for m in current_day.messages %}
-                    <tr>
-                        <td>
-                            <input type="hidden" name="day_msg_ids" value="{{ m.id }}">
-                            <input
-                                type="checkbox"
-                                name="selected_ids"
-                                value="{{ m.id }}"
-                                {% if m.is_selected %}checked{% endif %}
-                            >
-                        </td>
-                        <td>{{ m.time }}</td>
-                        <td>{{ m.sender }}</td>
-                        <td style="white-space: pre-wrap;">{{ m.message }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </form>
-    {% else %}
-        <p>No messages available to review.</p>
-    {% endif %}
-</body>
-</html>
+<div class="table-wrap"><table class="review-table"><thead><tr><th style="width:90px">Selected</th><th style="width:120px">Time</th><th style="width:190px">Name</th><th>Message</th></tr></thead><tbody>{% for m in current_day.messages %}<tr><td><input type="checkbox" name="selected_ids" value="{{ m.id }}" {% if m.is_selected %}checked{% endif %}><input type="hidden" name="day_msg_ids" value="{{ m.id }}"></td><td>{{ m.time }}</td><td>{{ m.sender }}</td><td><input type="hidden" name="message_ids" value="{{ m.id }}"><textarea class="review-message" name="message_bodies" rows="2" aria-label="Edit message from {{ m.sender }} at {{ m.time }}">{{ m.message }}</textarea></td></tr>{% endfor %}</tbody></table></div>
+<div class="review-toolbar"><button class="button" type="submit" onclick="setTarget({{ day_index - 1 }})" {% if day_index <= 0 %}disabled{% endif %}>← Previous date</button><button class="button primary" type="submit" onclick="setTarget({{ day_index }})">Save date</button><button class="button" type="submit" onclick="setTarget({{ day_index + 1 }})" {% if day_index + 1 >= total_days %}disabled{% endif %}>Next date →</button></div>
+</form>{% else %}<p>No messages to review yet. <a href="/upload">Upload a chat export</a> to begin.</p>{% endif %}
+</main><script>function setAll(checked){document.querySelectorAll('input[name="selected_ids"]').forEach(box=>box.checked=checked);}function setTarget(index){document.getElementById('target-day-index').value=index;}function jumpCalendarDate(value){const option=[...document.getElementById('available-days').options].find(item=>item.dataset.date===value);if(!option){window.alert('There are no messages on that date. Choose another date.');return;}setTarget(option.value);document.querySelector('form[action="/review"]').requestSubmit();}</script></body></html>

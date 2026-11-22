@@ -1,0 +1,32 @@
+<!doctype html><html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Upload WhatsApp log</title>
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        <main class="container">
+            <header class="page-head">
+                <div>
+                    <p class="eyebrow">STEP 1 OF 3</p>
+                    <h1>Upload chat export</h1>
+                    <!-- <p class="muted">Import an Android or iPhone WhatsApp text export.</p> -->
+                </div>
+            </header>
+            <nav class="steps">
+                <a href="/">Dashboard</a>
+                <a class="active" href="/upload">1 · Upload</a>
+                <a href="/mappings">2 · Match names</a>
+                <a href="/review">3 · Review messages</a>
+            </nav>
+            <section class="panel">
+                    <form action="/upload" method="post" enctype="multipart/form-data">
+                        <p class="muted">System messages are ignored by the parser. Previously imported messages are skipped.</p>
+                        <label><input type="file" name="file" accept=".txt,text/plain" required></label>
+                        <button class="button primary" type="submit">Upload and continue</button>
+                    </form>
+            </section>
+        </main>
+    </body>
+</html>

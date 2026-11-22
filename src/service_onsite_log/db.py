@@ -166,6 +166,15 @@ def get_all_messages_ordered() -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def get_latest_day_index() -> int:
+    days = sorted({
+        dt.date().isoformat()
+        for row in get_all_messages_ordered()
+        if (dt := parse_stored_timestamp(row["timestamp"])) is not None
+    })
+    return max(0, len(days) - 1)
+
+
 def delete_messages_by_ids(message_ids: list[int]) -> int:
     if not message_ids:
         return 0
@@ -188,6 +197,12 @@ def update_day_selection(day_msg_ids: list[int], selected_ids: list[int]) -> Non
                 "UPDATE messages SET is_selected = ? WHERE id = ?",
                 (flag, msg_id),
             )
+
+
+def update_message_bodies(message_ids: list[int], message_bodies: list[str]) -> None:
+    with get_db() as conn:
+        for message_id, body in zip(message_ids, message_bodies):
+            conn.execute("UPDATE messages SET message = ? WHERE id = ?", (body, message_id))
 
 def get_distinct_senders() -> list[str]:
     with get_db() as conn:
