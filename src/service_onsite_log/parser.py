@@ -90,6 +90,21 @@ def normalize_whatsapp_timestamp(raw_ts: str) -> str:
 def strip_invisible(text: str) -> str:
     return INVISIBLE_CHARS_PATTERN.sub('', text).strip()
 
+def loc_cleaning(loc:str) -> str:
+    """
+    common same terms
+    """
+    if loc == 'octa' or loc == 'OCTA':
+        return 'Octa'
+    elif loc == '香港大學' or loc == 'hku' or loc == 'Hku' or loc == '港大':
+        return 'HKU'
+    elif loc == '嶺大':
+        return '嶺南大學'
+    elif bool(re.fullmatch(r"[a-zA-Z]+", loc)):
+        return loc.upper()
+    else:
+        return loc 
+
 def is_system_message(sender: str, message: str) -> bool:
     if sender in ('System', '你', 'You'):
         return True
@@ -135,7 +150,7 @@ def parse_whatsapp_to_json(txt_path):
                     marker in message for marker in MEDIA_MARKERS
                 ):
                     continue
-
+                message = loc_cleaning(message)
                 current_msg = {
                     'timestamp': timestamp,
                     'sender': sender,
